@@ -1,0 +1,28 @@
+def extract(self, selector, with_body_html=False):
+    body = selector.xpath('//body')[0]
+    for node in iter_node(body):
+        node_hash = hash(node)
+        density_info = self.calc_text_density(node)
+        text_density = density_info['density']
+        ti_text = density_info['ti_text']
+        text_tag_count = self.count_text_tag(node, tag='p')
+        sbdi = self.calc_sbdi(ti_text, density_info['ti'], density_info['lti'])
+        images_list = node.xpath('.//img/@src')
+        node_info = {'ti': density_info['ti'],
+                     'lti': density_info['lti'],
+                     'tgi': density_info['tgi'],
+                     'ltgi': density_info['ltgi'],
+                     'node': node,
+                     'density': text_density,
+                     'text': ti_text,
+                     'images': images_list,
+                     'text_tag_count': text_tag_count,
+                     'sbdi': sbdi}
+        if with_body_html:
+            body_source_code = unescape(etree.tostring(node).decode())
+            node_info['body_html'] = body_source_code
+        self.node_info[node_hash] = node_info
+    std = self.calc_standard_deviation()
+    self.calc_new_score(std)
+    result = sorted(self.node_info.items(), key=lambda x: x[1]['score'], reverse=True)
+    return result

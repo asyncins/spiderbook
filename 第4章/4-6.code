@@ -1,0 +1,14 @@
+import requests
+# 假设页码 id 为递增数字
+for i in range(20):
+    # 构造列表页单页 URL
+    page_url = "http://example.com?page=%s" % i
+    # 向列表页发出请求
+    resp = requests.get(page_url)
+    # 从返回结果中抽取详情页 URL
+    url_list = [x for x in resp.text]
+    for url in url_list:
+        # 向详情页发出请求
+        article = requests.get(url)
+        # 拿到目标数据
+        text = article.text

@@ -1,0 +1,14 @@
+def calc_sbdi(self, text, ti, lti):
+    """
+            Ti - LTi
+    SbDi = --------------
+             Sbi + 1
+
+    SbDi：符号密度
+    Sbi：符号数量
+
+    :return:
+    """
+    sbi = self.count_punctuation_num(text)
+    sbdi = (ti - lti) / (sbi + 1)
+    return sbdi or 1  # sbdi 不能为0，否则会导致求对数时报错。

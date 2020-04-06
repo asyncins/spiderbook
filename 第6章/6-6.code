@@ -1,0 +1,35 @@
+class RegisterHandler(MethodView):
+
+    def post(self):
+        username = request.json.get("username")
+        pwd = request.json.get("password")
+        nick = request.json.get("nick")
+        email = request.json.get("email")
+        if not username or not pwd or not nick or not email or "@" not in email:
+            return {"message": StatusCode.ParameterError.value[0],
+                    "data": {},
+                    "code": StatusCode.ParameterError.value[1]
+                    }, 400
+        password = pwd
+        count = databases.user.count_documents({})
+        if not count:
+            # 首次注册的账户为超级管理员，启动激活
+            role = Role.SuperUser.value
+            message = {"username": username, "password": password,
+                       "nick": nick, "email": email,
+                       "role": role, "status": Status.On.value}
+        else:
+            # 非首次注册账户默认为开发者，且未激活
+            role = Role.Developer.value
+            message = {"username": username, "password": password,
+                       "nick": nick, "email": email,
+                       "role": role, "status": Status.Off.value}
+        message["create"] = datetime.now()
+        # 将信息写入数据库并将相应信息返回给用户
+        inserted = databases.user.insert_one(message).inserted_id
+        message["id"] = str(inserted)
+        message["username"] = username
+        message["email"] = email
+        message["role"] = role
+        message.pop("_id")
+        return {"message": "success", "data": message, "code": 201}, 201

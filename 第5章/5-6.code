@@ -1,0 +1,4 @@
+def calc_standard_deviation(self):
+    score_list = [x['density'] for x in self.node_info.values()]
+    std = np.std(score_list, ddof=1)
+    return std

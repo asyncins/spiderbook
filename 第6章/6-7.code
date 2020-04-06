@@ -1,0 +1,29 @@
+class LoginHandler(MethodView):
+
+    def post(self):
+        username = request.json.get("username")
+        pwd = request.json.get("password")
+        password = md5_encode(pwd)
+        # 支持用户名或邮箱登录
+        query = {"username": username, "password": password}
+        name_exit = databases.user.count_documents(query)
+        # 校验用户是否存在
+        if not name_exit:
+            query = {"email": username, "password": password}
+        result = databases.user.find_one(query)
+        if not result:
+            return {"message": StatusCode.NotFound.value[0],
+                    "data": {},
+                    "code": StatusCode.NotFound.value[1]
+                    }, 400
+        # 校验用户状态
+        status = result.get("status")
+        if not status:
+            return {"message": StatusCode.UserStatusOff.value[0],
+                    "data": {},
+                    "code": StatusCode.UserStatusOff.value[1]
+                    }, 400
+        # 返回登录结果
+        return {"message": "success",
+                "data": {"username": username},
+                "code": 200}

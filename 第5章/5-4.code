@@ -1,0 +1,26 @@
+def calc_text_density(self, element):
+    """
+    根据公式：
+
+           Ti - LTi
+    TDi = -----------
+          TGi - LTGi
+
+
+    Ti：节点 i 的字符串字数
+    LTi：节点 i 的带链接的字符串字数
+    TGi：节点 i 的标签数
+    LTGi：节点 i 的带连接的标签数
+
+
+    :return:
+    """
+    ti_text = '\n'.join(self.get_all_text_of_element(element))
+    ti = len(ti_text)
+    lti = len(''.join(self.get_all_text_of_element(element.xpath('.//a'))))
+    tgi = len(element.xpath('.//*'))
+    ltgi = len(element.xpath('.//a'))
+    if (tgi - ltgi) == 0:
+        return {'density': 0, 'ti_text': ti_text, 'ti': ti, 'lti': lti, 'tgi': tgi, 'ltgi': ltgi}
+    density = (ti - lti) / (tgi - ltgi)
+    return {'density': density, 'ti_text': ti_text, 'ti': ti, 'lti': lti, 'tgi': tgi, 'ltgi': ltgi}

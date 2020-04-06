@@ -1,0 +1,26 @@
+# 伪代码
+import requests
+
+# 向目标网页发出请求，假设页面 id 为 3376
+now_html_data = requests.get("http://example.com/article=3376")
+# 解析页面
+data = parse(now_html_data)
+# 抽取页面内容
+article = 3376
+title = data.title
+salay = data.salay
+place = data.place
+edu = data.edu
+# 从数据库中查询与页面 id 相同的数据
+mysql_data = query("select * from info where aid=3376")
+# 判断，如果页面内容与数据库存储的数据不同，则更新数据库
+if ([article != mysql_data.id, title != mysql_data.title,
+		salay != mysql_data.salay, place != mysql_data.place,
+		edu != mysql_data.edu
+]):
+		# 更新数据库
+		query("update info set title=%s, salay=%s, place=%s, edu=%s where aid=3376"
+		% (title, salay, place, edu))
+else:
+		# 如果页面内容与数据库存储的数据相同，则不作处理
+		pass

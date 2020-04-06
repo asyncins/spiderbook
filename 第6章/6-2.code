@@ -1,0 +1,13 @@
+class AddVersion(WsResource):
+
+    def render_POST(self, txrequest):
+        eggf = BytesIO(txrequest.args.pop(b'egg')[0])
+        args = native_stringify_dict(copy(txrequest.args), keys_only=False)
+        project = args['project'][0]
+        version = args['version'][0]
+        self.root.eggstorage.put(eggf, project, version)
+        spiders = get_spider_list(project, version=version)
+        self.root.update_projects()
+        UtilsCache.invalid_cache(project)
+        return {"node_name": self.root.nodename, "status": "ok", "project": project, "version": version, \
+            "spiders": len(spiders)}
